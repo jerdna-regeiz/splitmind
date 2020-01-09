@@ -1,6 +1,10 @@
 import copy
-import pwndbg
-from pwndbg.commands.context import contextoutput, output, clear_screen
+try:
+    import pwndbg
+    from pwndbg.commands.context import contextoutput, output, clear_screen
+except ImportError as err:
+    # Most likely not run from gdb but something else..
+    pass
 
 class Pwngdb():
     def banners(self, splits):
