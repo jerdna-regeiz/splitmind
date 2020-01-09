@@ -15,15 +15,31 @@ def read_tmux_output(res):
     pass
   return res.strip().split(":")
 
-def tmux_split(*args, target=None, display=None, cmd=("/bin/cat","-")):
+def tmux_split(*args, target=None, display=None, cmd="/bin/cat -", use_stdin=False):
+    """
+    Parameters
+    ----------
+    use_stdin : boolean
+        If set to true, it will output to the stdin of the given command.
+        But it is not as easy as you might think: Most of the time one would get a tty as proc/fd/*
+        which is rather unsupportive to write to (hint: it won't go to stdin of the process).
+        Therefore the command will be prepended with (cat)| wo have an other with a pipe as output
+        to which we may write
+    """
     if target is not None:
         args = list(args) + ["-t", target.id]
+    fd = "#{pane_tty}" if not use_stdin else "/proc/#{pane_pid}/fd/0"
+    if use_stdin:
+        cmd = "(cat)|"+cmd
     res = check_output('tmux split-window -P -d -F'.split(" ")
-                      + ["#{pane_id}:#{pane_tty}"] + list(args)+ list(cmd))
+                       + ["#{pane_id}:"+fd] + list(args)+ [cmd])
     return TmuxSplit(*read_tmux_output(res), display)
 
 def tmux_kill(paneid):
-  check_output(['tmux','kill-pane','-t',paneid])
+    try:
+        check_output(['tmux','kill-pane','-t',paneid])
+    except subprocess.CalledProcessError as err:
+        print(err)
 
 def tmux_pane_size(pane):
   res = check_output(['tmux','display','-p','-F', '#{pane_width}:#{pane_height}','-t',pane.id])
@@ -36,7 +52,7 @@ def close_panes(panes):
 
 
 class Tmux():
-    def __init__(self, cmd=("/bin/cat","-")):
+    def __init__(self, cmd="/bin/cat -"):
         self.cmd = cmd
         self.panes = []
         atexit.register(self.close)
@@ -57,20 +73,32 @@ class Tmux():
         self.panes.append(split)
         return split
 
-    def split(self, *args, target=None, display=None, cmd=None):
+    def split(self, *args, target=None, display=None, cmd=None, use_stdin=None):
+        """
+        TODO: documentation
+        Parameters
+        ----------
+        use_stdin : boolean
+            If set to true, it will output to the stdin of the given command.
+            But it is not as easy as you might think: Most of the time one would get a tty as proc/fd/*
+            which is rather unsupportive to write to (hint: it won't go to stdin of the process).
+            Therefore the command will be prepended with (cat)| wo have an other with a pipe as output
+            to which we may write
+        """
         if isinstance(target, str):
             target = self.get(target)
-        split = tmux_split(*args, target=target, display=display, cmd=cmd or self.cmd)
+        split = tmux_split(*args, target=target, display=display, cmd=cmd or self.cmd,
+                           use_stdin=use_stdin)
         self.panes.append(split)
         return split
-    def left (self, *args, of=None, display=None):
-        return self.split("-hb", *args, target=of, display=display)
-    def right(self, *args, of=None, display=None):
-        return self.split("-h", *args, target=of, display=display)
-    def above(self, *args, of=None, display=None):
-        return self.split("-vb", target=of, display=display)
-    def below(self, *args, of=None, display=None):
-        return self.split("-v", target=of, display=display)
+    def left (self, *args, of=None, display=None, **kwargs):
+        return self.split("-hb", *args, target=of, display=display, **kwargs)
+    def right(self, *args, of=None, display=None, **kwargs):
+        return self.split("-h",  *args, target=of, display=display, **kwargs)
+    def above(self, *args, of=None, display=None, **kwargs):
+        return self.split("-vb", *args, target=of, display=display, **kwargs)
+    def below(self, *args, of=None, display=None, **kwargs):
+        return self.split("-v",  *args, target=of, display=display, **kwargs)
     def splits(self):
         return self.panes
     def close(self):

@@ -12,7 +12,7 @@ class Pwndbg():
       for tty in set(pane.tty for pane in panes):
         with open(tty,"w") as out:
           clear_screen(out)
-      for pane in panes:
+      for pane in [p for p in panes if p.display is not None]:
         sec = pane.display
         size = pane.size()
         with open(pane.tty,"w") as out:
@@ -22,6 +22,6 @@ class Pwndbg():
 
     def setup(self, splits):
         """Sets up pwndbg to display sections in the given splits using display == section"""
-        for split in splits:
+        for split in [s for s in splits if s.display is not None]:
             contextoutput(split.display, split.tty, True)
         self.banners(splits)

@@ -103,6 +103,32 @@ Mind.build(self)
 ```
 Builds the splitmind, by telling the thinker where to put his thoughts
 
+## TMUX
+
+Tmux does handle the splits using `split-window`. Further `*args` are directly passed to the tmux
+call. Tmux supports following additional and optional keywords:
+- `cmd : str`: The command to run in the created split
+- `use_stdin : boolean`: sets up the split to be able to receive content as stdin to the given cmd
+
+Splits can be created without display to start running arbitrary commands aswell.
+
+Example:
+
+```python
+python
+import splitmind
+(splitmind.Mind()
+  .below(display="backtrace")
+  .right(display="stack", cmd="grep rax", use_stdin=True)
+  .right(display="regs")
+  .below(cmd='sleep 1; htop')
+  .below(of="stack", cmd='sleep 1; watch ls')
+  .right(of="main", display="disasm")
+  .show("legend", on="disasm")
+).build()
+end
+```
+
 ## Creating new splitter
 
 You like screen? Please go ahead and create a splitter for it (and please submit a pullrequest).
