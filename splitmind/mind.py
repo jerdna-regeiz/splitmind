@@ -17,18 +17,37 @@ class Mind():
 
 
     def left (self, *args, of=None, display=None):
+        """Creates a split left of the current split.
+        :param str|split    of       : use this split instead of current
+        :param str          display  : the section to be displayed here
+        :param various      args     : further args are passed to the splitting cmd"""
         self.last = self.splitter.left(*args, of=of or self.last, display=display)
         return self
     def right(self, *args, of=None, display=None):
+        """Creates a split right of the current split.
+        :param str|split    of       : use this split instead of current
+        :param str          display  : the section to be displayed here
+        :param various      args     : further args are passed to the splitting cmd"""
         self.last = self.splitter.right(*args, of=of or self.last, display=display)
         return self
     def above(self, *args, of=None, display=None):
+        """Creates a split above of the current split.
+        :param str|split    of       : use this split instead of current
+        :param str          display  : the section to be displayed here
+        :param various      args     : further args are passed to the splitting cmd"""
         self.last = self.splitter.above(*args, of=of or self.last, display=display)
         return self
     def below(self, *args, of=None, display=None):
+        """Creates a split below of the current split.
+        :param str|split    of       : use this split instead of current
+        :param str          display  : the section to be displayed here
+        :param various      args     : further args are passed to the splitting cmd"""
         self.last = self.splitter.below(*args, of=of or self.last, display=display)
         return self
     def show(self, display, on=None):
+        """Does not create a split but tells to display given section on some already created split.
+        :param str|split    on       : which split to be used
+        :param str          display  : the section to be displayed here"""
         self.last = self.splitter.show(on=on or self.last, display=display)
         return self
     def select(self, display):
