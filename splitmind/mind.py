@@ -1,12 +1,12 @@
 from .splitter.tmux import Tmux
-from .thinker.pwngdb import Pwngdb
+from .thinker.pwndbg import Pwndbg
 
 
 class Mind():
     """A builder to create a splitmind.
     It splits always on the last created split if no 'of' is given or an other split is selected.
     To split the original starting point use select(None) or use an 'of' which is not defined yet"""
-    def __init__(self, splitter=Tmux, thinker=Pwngdb):
+    def __init__(self, splitter=Tmux, thinker=Pwndbg):
         if callable(splitter):
             splitter = splitter()
         if callable(thinker):

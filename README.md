@@ -47,7 +47,7 @@ generated splits to the thinker. The **Mind** is most likely the only interface 
 
 ### Mind
 ```python
-Mind(self, splitter=<class 'splitmind.splitter.tmux.Tmux'>, thinker=<class 'splitmind.thinker.pwngdb.Pwngdb'>)
+Mind(self, splitter=<class 'splitmind.splitter.tmux.Tmux'>, thinker=<class 'splitmind.thinker.pwndbg.Pwndbg'>)
 ```
 A builder to create a splitmind.
 It splits always on the last created split if no 'of' is given or an other split is selected.

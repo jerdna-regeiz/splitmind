@@ -6,7 +6,7 @@ except ImportError as err:
     # Most likely not run from gdb but something else..
     pass
 
-class Pwngdb():
+class Pwndbg():
     def banners(self, splits):
       panes = splits
       for tty in set(pane.tty for pane in panes):
@@ -21,7 +21,7 @@ class Pwngdb():
           out.flush()
 
     def setup(self, splits):
-        """Sets up pwngdb to display sections in the given splits using display == section"""
+        """Sets up pwndbg to display sections in the given splits using display == section"""
         for split in splits:
             contextoutput(split.display, split.tty, True)
         self.banners(splits)
