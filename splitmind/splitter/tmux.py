@@ -1,6 +1,6 @@
 import atexit
 import time
-from subprocess import check_output
+from subprocess import check_output, CalledProcessError
 
 from splitmind.models import Split
 
@@ -38,7 +38,7 @@ def tmux_split(*args, target=None, display=None, cmd="/bin/cat -", use_stdin=Fal
 def tmux_kill(paneid):
     try:
         check_output(['tmux','kill-pane','-t',paneid])
-    except subprocess.CalledProcessError as err:
+    except CalledProcessError as err:
         print(err)
 
 def tmux_pane_size(pane):
