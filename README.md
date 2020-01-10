@@ -45,52 +45,61 @@ thinker. It works as a builder, creating the splits using the splitter and when 
 generated splits to the thinker. The **Mind** is most likely the only interface you need.
 
 
-### Mind
+## Mind
 ```python
 Mind(self, splitter=<class 'splitmind.splitter.tmux.Tmux'>, thinker=<class 'splitmind.thinker.pwndbg.Pwndbg'>)
 ```
 A builder to create a splitmind.
 It splits always on the last created split if no 'of' is given or an other split is selected.
-To split the original starting point use select(None) or use an 'of' which is not defined yet
-##### left
+To split the original starting point use select(None) or use an 'of' which is not defined yet.
+Further kwargs are always passed as is the the underlying splitter to be able to have splitter
+specific additional functionality. Parameters not consumed by the splitter are passed as split
+settings to the thinker
+
+#### left
 ```python
-Mind.left(self, *args, of=None, display=None)
+Mind.left(self, *args, of=None, display=None, **kwargs)
 ```
 Creates a split left of the current split.
 :param str|split    of       : use this split instead of current
 :param str          display  : the section to be displayed here
 :param various      args     : further args are passed to the splitting cmd
+:param dict         kwargs   : further keyword args are passed to the splitter method
 #### right
 ```python
-Mind.right(self, *args, of=None, display=None)
+Mind.right(self, *args, of=None, display=None, **kwargs)
 ```
 Creates a split right of the current split.
 :param str|split    of       : use this split instead of current
 :param str          display  : the section to be displayed here
 :param various      args     : further args are passed to the splitting cmd
+:param dict         kwargs   : further keyword args are passed to the splitter method
 #### above
 ```python
-Mind.above(self, *args, of=None, display=None)
+Mind.above(self, *args, of=None, display=None, **kwargs)
 ```
 Creates a split above of the current split.
 :param str|split    of       : use this split instead of current
 :param str          display  : the section to be displayed here
 :param various      args     : further args are passed to the splitting cmd
+:param dict         kwargs   : further keyword args are passed to the splitter method
 #### below
 ```python
-Mind.below(self, *args, of=None, display=None)
+Mind.below(self, *args, of=None, display=None, **kwargs)
 ```
 Creates a split below of the current split.
 :param str|split    of       : use this split instead of current
 :param str          display  : the section to be displayed here
 :param various      args     : further args are passed to the splitting cmd
+:param dict         kwargs   : further keyword args are passed to the splitter method
 #### show
 ```python
-Mind.show(self, display, on=None)
+Mind.show(self, display, on=None, **kwargs)
 ```
 Does not create a split but tells to display given section on some already created split.
 :param str|split    on       : which split to be used
 :param str          display  : the section to be displayed here
+:param dict         kwargs   : further keyword args are passed to the splitter method
 #### select
 ```python
 Mind.select(self, display)
@@ -128,6 +137,15 @@ import splitmind
 ).build()
 end
 ```
+
+## Pwndbg
+
+Currently Pwndbg is the only thinker / content producer available.
+It uses the `contextoutput` function to bind context sections to splits with the matching display
+name.
+
+All `split.settings` (keyword arguments not used by the splitter i.e. tmux) are passed as keyword
+arguments to `contextoutput`
 
 ## Creating new splitter
 

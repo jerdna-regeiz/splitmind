@@ -15,7 +15,7 @@ def read_tmux_output(res):
     pass
   return res.strip().split(":")
 
-def tmux_split(*args, target=None, display=None, cmd="/bin/cat -", use_stdin=False):
+def tmux_split(*args, target=None, display=None, cmd="/bin/cat -", use_stdin=False, **kwargs):
     """
     Parameters
     ----------
@@ -33,7 +33,7 @@ def tmux_split(*args, target=None, display=None, cmd="/bin/cat -", use_stdin=Fal
         cmd = "(cat)|"+cmd
     res = check_output('tmux split-window -P -d -F'.split(" ")
                        + ["#{pane_id}:"+fd] + list(args)+ [cmd])
-    return TmuxSplit(*read_tmux_output(res), display)
+    return TmuxSplit(*read_tmux_output(res), display, kwargs)
 
 def tmux_kill(paneid):
     try:
@@ -73,7 +73,7 @@ class Tmux():
         self.panes.append(split)
         return split
 
-    def split(self, *args, target=None, display=None, cmd=None, use_stdin=None):
+    def split(self, *args, target=None, display=None, cmd=None, use_stdin=None, **kwargs):
         """
         TODO: documentation
         Parameters
@@ -88,7 +88,7 @@ class Tmux():
         if isinstance(target, str):
             target = self.get(target)
         split = tmux_split(*args, target=target, display=display, cmd=cmd or self.cmd,
-                           use_stdin=use_stdin)
+                           use_stdin=use_stdin, **kwargs)
         self.panes.append(split)
         return split
     def left (self, *args, of=None, display=None, **kwargs):

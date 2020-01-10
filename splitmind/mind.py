@@ -7,8 +7,8 @@ class Mind():
     It splits always on the last created split if no 'of' is given or an other split is selected.
     To split the original starting point use select(None) or use an 'of' which is not defined yet.
     Further kwargs are always passed as is the the underlying splitter to be able to have splitter
-    specific additional functionality. Keep in mind that splitter are free to die if the additional
-    parameters are not supported (and are advised to do so to find configuration mistakes early on)
+    specific additional functionality. Parameters not consumed by the splitter are passed as split
+    settings to the thinker
     """
     def __init__(self, splitter=Tmux, thinker=Pwndbg):
         if callable(splitter):

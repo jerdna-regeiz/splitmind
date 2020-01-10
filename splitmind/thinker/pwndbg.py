@@ -23,5 +23,5 @@ class Pwndbg():
     def setup(self, splits):
         """Sets up pwndbg to display sections in the given splits using display == section"""
         for split in [s for s in splits if s.display is not None]:
-            contextoutput(split.display, split.tty, True)
+            contextoutput(split.display, split.tty, True, **split.settings)
         self.banners(splits)
