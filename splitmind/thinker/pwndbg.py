@@ -20,8 +20,11 @@ class Pwndbg():
           out.write(b+"\n")
           out.flush()
 
-    def setup(self, splits):
+    def setup(self, splits, nobanner=None):
         """Sets up pwndbg to display sections in the given splits using display == section"""
+        if nobanner is not None:
+            for split in splits:
+                split.settings["banner"] = False
         for split in [s for s in splits if s.display is not None]:
             contextoutput(split.display, split.tty, True, **split.settings)
         self.banners(splits)

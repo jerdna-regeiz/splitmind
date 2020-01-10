@@ -75,6 +75,8 @@ class Mind():
         self.splitter.do(**kwargs)
         return self
 
-    def build(self):
-        """Builds the splitmind, by telling the thinker where to put his thoughts"""
-        self.thinker.setup(self.splitter.splits())
+    def build(self, **kwargs):
+        """Builds the splitmind, by telling the thinker where to put his thoughts
+        :param dict kwagrs : passed to thinker setup to applie thinker specific value
+        """
+        self.thinker.setup(self.splitter.splits(), **kwargs)

@@ -45,7 +45,7 @@ thinker. It works as a builder, creating the splits using the splitter and when 
 generated splits to the thinker. The **Mind** is most likely the only interface you need.
 
 
-## Mind
+### Mind
 ```python
 Mind(self, splitter=<class 'splitmind.splitter.tmux.Tmux'>, thinker=<class 'splitmind.thinker.pwndbg.Pwndbg'>)
 ```
@@ -106,11 +106,20 @@ Mind.select(self, display)
 ```
 Selects the given display to continue from there.
 Use None for the main split
+#### tell_splitter
+```python
+Mind.tell_splitter(self, **kwargs)
+```
+Tells the splitter to configure according to the passed keyword arguments.
+Which arguments are available and what happens entirely depends on the implementation of the
+splitter
 #### build
 ```python
-Mind.build(self)
+Mind.build(self, **kwargs)
 ```
 Builds the splitmind, by telling the thinker where to put his thoughts
+:param dict kwagrs : passed to thinker setup to applie thinker specific value
+
 
 ## TMUX
 
@@ -146,6 +155,10 @@ name.
 
 All `split.settings` (keyword arguments not used by the splitter i.e. tmux) are passed as keyword
 arguments to `contextoutput`
+
+With the `build` one can specify following options:
+* **nobanner** boolean: Banners of all configured outputs will be hidden. Same effect as specifying
+banner=False on every split.
 
 ## Creating new splitter
 
