@@ -8,12 +8,12 @@ class TmuxSplit(Split):
     def size(self):
         return tmux_pane_size(self)
 
-def read_tmux_output(res):
+def read_tmux_output(res, delimiter=':'):
   try:
     res = res.decode("utf-8")
   except:
     pass
-  return res.strip().split(":")
+  return res.strip().split(delimiter)
 
 def tmux_split(*args, target=None, display=None, cmd="/bin/cat -", use_stdin=False, **kwargs):
     """
@@ -59,11 +59,17 @@ def tmux_pane_title(pane, title):
     else:
         check_output(['tmux','select-pane','-T',title,'-t',pane.id])
 
+def tmux_window_options():
+    return read_tmux_output(check_output(['tmux', 'show-options', '-w']), delimiter="\n")
+
 
 class Tmux():
     def __init__(self, cmd="/bin/cat -"):
         self.cmd = cmd
         self.panes = []
+        self._saved_tmux_options = tmux_window_options()
+        if not [o for o in self._saved_tmux_options if o.startswith("pane-border-status")]:
+            self._saved_tmux_options.append("pane-border-status off")
         atexit.register(self.close)
 
     def get(self, display):
@@ -120,6 +126,9 @@ class Tmux():
         return self.panes
     def close(self):
         close_panes(self.panes)
+        #restore options
+        for option in [o for o in self._saved_tmux_options if o]:
+            check_output(["tmux", "set"] + option.split(" "))
 
     def do(self, show_titles=None, set_title=None, target=None):
         """Tells tmux to do something. This is called by tell_splitter in Mind
