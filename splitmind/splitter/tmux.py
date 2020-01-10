@@ -50,6 +50,15 @@ def close_panes(panes):
   for pane in set(pane.id for pane in panes):
     tmux_kill(pane)
 
+def tmux_pane_border_status(value):
+    check_output(['tmux','set' ,'pane-border-status', value])
+
+def tmux_pane_title(pane, title):
+    if pane is None:
+        check_output(['tmux','select-pane','-T',title])
+    else:
+        check_output(['tmux','select-pane','-T',title,'-t',pane.id])
+
 
 class Tmux():
     def __init__(self, cmd="/bin/cat -"):
@@ -60,6 +69,8 @@ class Tmux():
     def get(self, display):
         """Gets a split by the name of the display, or None if name is not found.
         If multiple panes got the same display name, it will return the first"""
+        if isinstance(display, Split):
+            return display
         try:
             return [p for p in self.panes if p.display == display][0]
         except IndexError:
@@ -71,11 +82,14 @@ class Tmux():
             on = self.get(on)
         split = on._replace(display=display)
         self.panes.append(split)
+        if display:
+            tmux_pane_title(split,
+                            ", ".join([sp.display for sp in self.panes if sp.tty == split.tty]))
         return split
 
     def split(self, *args, target=None, display=None, cmd=None, use_stdin=None, **kwargs):
         """
-        TODO: documentation
+        Splits the tmux pane and associates the cmd & display with the new pane
         Parameters
         ----------
         use_stdin : boolean
@@ -89,8 +103,11 @@ class Tmux():
             target = self.get(target)
         split = tmux_split(*args, target=target, display=display, cmd=cmd or self.cmd,
                            use_stdin=use_stdin, **kwargs)
+        if display:
+            tmux_pane_title(split, display)
         self.panes.append(split)
         return split
+
     def left (self, *args, of=None, display=None, **kwargs):
         return self.split("-hb", *args, target=of, display=display, **kwargs)
     def right(self, *args, of=None, display=None, **kwargs):
@@ -103,5 +120,25 @@ class Tmux():
         return self.panes
     def close(self):
         close_panes(self.panes)
+
+    def do(self, show_titles=None, set_title=None, target=None):
+        """Tells tmux to do something. This is called by tell_splitter in Mind
+        All actions are only done if according parameter is not None
+        Parameters
+        ----------
+        show_titles : boolean|str
+            If set to true or top, it will display pane titles in the top border
+            If set to bottom, it will display pane titles in the bottom border
+            If set to false, it will hide the titles in the border
+        set_title : string
+            Sets the title of a given target or if target is None of the current split
+        target : string|split
+            The target of actions. Either a string with display name or a ready split or None for
+            the current split
+        """
+        if show_titles is not None:
+            tmux_pane_border_status({"bottom":"bottom", False:"off"}.get(show_titles, "top"))
+        if set_title is not None:
+            tmux_pane_title(self.get(target), set_title)
 
 
