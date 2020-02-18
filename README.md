@@ -6,6 +6,11 @@ Currently only `gdb` with `pwndbg` as information provider is supported and `tmu
 It relies on the ability to ouput section of information to different tty.
 
 
+![Example Image](docs/img/example.png)
+*[Example configuration](docs/examples/example1.gdbinit)*
+
+Note above example uses splitmind and following configuration:
+
 ## Install
 
 ```shell
@@ -127,6 +132,7 @@ Tmux does handle the splits using `split-window`. Further `*args` are directly p
 call. Tmux supports following additional and optional keywords:
 - `cmd : str`: The command to run in the created split
 - `use_stdin : boolean`: sets up the split to be able to receive content as stdin to the given cmd
+- `size : str`: gives a size to the new split (as lines or as percentage)
 
 Splits can be created without display to start running arbitrary commands aswell.
 
@@ -174,3 +180,17 @@ You don't use pwndbg, but have an other case where a splitted layout with automa
 in handy? Yeah! Please look at `splitmind.thnker.pwndbg`, it is even simpler than splitters are, as
 they only require a `setup(splits)` method which will then do all the initialization of the content
 creation process/programm.
+
+## FAQ
+
+* **How do I create a split containing the input/output of the program debugged by gdb?**
+ ```python
+(splitmind.Mind()
+  .above(cmd='tty; tail -f /dev/null', clearing=False)
+).build()
+ ```
+ Creating a pane which (important) does not clear, shows the used tty and then just reads /dev/null.
+ Tailing /dev/null is important, so that the tty is not bothered at all by the running process.
+
+ Then in `gdb` issue `tty /dev/pts/<ttynr>` with the shown tty. This will use the newly created
+ pane as input/output of the debugged process. Just ignore the warning.
