@@ -15,7 +15,8 @@ def read_tmux_output(res, delimiter=':'):
     pass
   return res.strip().split(delimiter)
 
-def tmux_split(*args, target=None, display=None, cmd="/bin/cat -", use_stdin=False, **kwargs):
+def tmux_split(*args, target=None, display=None, cmd="/bin/cat -", use_stdin=False, size=None,
+               **kwargs):
     """
     Parameters
     ----------
@@ -25,9 +26,15 @@ def tmux_split(*args, target=None, display=None, cmd="/bin/cat -", use_stdin=Fal
         which is rather unsupportive to write to (hint: it won't go to stdin of the process).
         Therefore the command will be prepended with (cat)| wo have an other with a pipe as output
         to which we may write
+    size : the size of the new split
+        pecify the size of the new pane in lines (for vertical split) or in cells
+        (for horizontal split), or as a percentage if ending with %
     """
+    args = list(args)
     if target is not None:
-        args = list(args) + ["-t", target.id]
+        args += ["-t", target.id]
+    if size is not None:
+        args += ["-p", size[:-1]] if size.endswith("%") else ["-l", size]
     fd = "#{pane_tty}" if not use_stdin else "/proc/#{pane_pid}/fd/0"
     if use_stdin:
         cmd = "(cat)|"+cmd
@@ -82,11 +89,12 @@ class Tmux():
         except IndexError:
             return None
 
-    def show(self, display, on=None):
+    def show(self, display, on=None, **kwargs):
         """Tells to display on an other split as well"""
         if isinstance(on, str):
             on = self.get(on)
-        split = on._replace(display=display)
+        split = on._replace(display=display, settings=on.settings.copy())
+        split.settings.update(kwargs)
         self.panes.append(split)
         if display:
             tmux_pane_title(split,

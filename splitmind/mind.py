@@ -68,11 +68,13 @@ class Mind():
             self.last = self.splitter.get(display)
         return self
 
-    def tell_splitter(self, **kwargs):
+    def tell_splitter(self, target=None, **kwargs):
         """Tells the splitter to configure according to the passed keyword arguments.
         Which arguments are available and what happens entirely depends on the implementation of the
         splitter"""
-        self.splitter.do(**kwargs)
+        if target is None:
+            target = self.last
+        self.splitter.do(target=target, **kwargs)
         return self
 
     def build(self, **kwargs):

@@ -9,7 +9,7 @@ except ImportError as err:
 class Pwndbg():
     def banners(self, splits):
       panes = splits
-      for tty in set(pane.tty for pane in panes):
+      for tty in set(pane.tty for pane in panes if pane.settings.get("clearing", True)):
         with open(tty,"w") as out:
           clear_screen(out)
       for pane in [p for p in panes if p.display is not None]:
@@ -24,7 +24,8 @@ class Pwndbg():
         """Sets up pwndbg to display sections in the given splits using display == section"""
         if nobanner is not None:
             for split in splits:
-                split.settings["banner"] = False
+                if "banner" not in split.settings:
+                    split.settings["banner"] = False
         for split in [s for s in splits if s.display is not None]:
             contextoutput(split.display, split.tty, True, **split.settings)
         self.banners(splits)
