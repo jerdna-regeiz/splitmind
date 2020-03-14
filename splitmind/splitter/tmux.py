@@ -1,4 +1,5 @@
 import atexit
+import os
 import time
 from subprocess import check_output, CalledProcessError
 
@@ -73,7 +74,7 @@ def tmux_window_options():
 class Tmux():
     def __init__(self, cmd="/bin/cat -"):
         self.cmd = cmd
-        self.panes = []
+        self.panes = [TmuxSplit(os.environ["TMUX_PANE"], None, "main", {}) ]
         self._saved_tmux_options = tmux_window_options()
         if not [o for o in self._saved_tmux_options if o.startswith("pane-border-status")]:
             self._saved_tmux_options.append("pane-border-status off")
@@ -133,10 +134,17 @@ class Tmux():
     def splits(self):
         return self.panes
     def close(self):
-        close_panes(self.panes)
+        close_panes(self.panes[1:])
         #restore options
         for option in [o for o in self._saved_tmux_options if o]:
             check_output(["tmux", "set"] + option.split(" "))
+
+    def finish(self, **kwargs):
+        """Finishes the splitting."""
+        # tmux <2.6 does select the target pane. Later versions stay with the current.
+        # To have consistent behaviour, we select the main pane after splitting
+        check_output(['tmux', 'select-pane', "-t", os.environ["TMUX_PANE"]])
+
 
     def do(self, show_titles=None, set_title=None, target=None):
         """Tells tmux to do something. This is called by tell_splitter in Mind

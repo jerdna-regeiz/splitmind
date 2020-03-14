@@ -81,4 +81,5 @@ class Mind():
         """Builds the splitmind, by telling the thinker where to put his thoughts
         :param dict kwagrs : passed to thinker setup to applie thinker specific value
         """
+        self.splitter.finish(**kwargs)
         self.thinker.setup(self.splitter.splits(), **kwargs)

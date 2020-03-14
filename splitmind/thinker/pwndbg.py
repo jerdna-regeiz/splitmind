@@ -26,6 +26,6 @@ class Pwndbg():
             for split in splits:
                 if "banner" not in split.settings:
                     split.settings["banner"] = False
-        for split in [s for s in splits if s.display is not None]:
+        for split in [s for s in splits if s.display is not None and s.tty is not None]:
             contextoutput(split.display, split.tty, True, **split.settings)
-        self.banners(splits)
+        self.banners(s for s in splits if s.tty is not None)
