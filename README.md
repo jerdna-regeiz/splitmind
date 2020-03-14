@@ -14,7 +14,7 @@ Note above example uses splitmind and following configuration:
 ## Install
 
 ```shell
-git clone https://github.com/jerdna/splitmind
+git clone https://github.com/jerdna-regeiz/splitmind
 echo "source $PWD/splitmind/gdbinit.py" >> ~/.gdbinit
 ```
 
