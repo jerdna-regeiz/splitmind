@@ -70,8 +70,26 @@ def tmux_pane_title(pane, title):
 def tmux_window_options():
     return read_tmux_output(check_output(['tmux', 'show-options', '-w']), delimiter="\n")
 
+class DummyTmux():
+    def __new__(cls, *_args, **kwargs):
+        print("Error: Splitmind-Tmux can only be used when running under tmux")
+        return super(DummyTmux, cls).__new__(cls)
+
+    def __init__(self, *_args, **kwargs):
+        print("Error: Splitmind-Tmux can only be used when running under tmux")
+
+    def __getattr__(self, name):
+        return lambda *_, **_kw: None if name in [k for k,x in Tmux.__dict__.items() if callable(x)] else None
+
+    def splits(self):
+        return []
 
 class Tmux():
+    def __new__(cls, *_args, **_kwargs):
+        if not "TMUX_PANE" in os.environ:
+            return DummyTmux.__new__(DummyTmux)
+        return super(Tmux, cls).__new__(cls)
+
     def __init__(self, cmd="/bin/cat -"):
         self.cmd = cmd
         self.panes = [TmuxSplit(os.environ["TMUX_PANE"], None, "main", {}) ]
