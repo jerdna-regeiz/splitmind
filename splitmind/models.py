@@ -4,7 +4,7 @@ from collections import namedtuple
 
 class Split(ABC, namedtuple('_Split', ['id','tty', 'display', 'settings'])):
     """Represents a split capable of displaying information.
-    Must be copyable without sideeffects"""
+    Must be copyable without side effects"""
     @abstractmethod
     def size(self):
         pass
