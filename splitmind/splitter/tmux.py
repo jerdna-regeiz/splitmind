@@ -35,7 +35,7 @@ def tmux_split(*args, target=None, display=None, cmd="/bin/cat -", use_stdin=Fal
     if target is not None:
         args += ["-t", target.id]
     if size is not None:
-        args += ["-p", size[:-1]] if size.endswith("%") else ["-l", size]
+        args += ["-l", size]
     fd = "#{pane_tty}" if not use_stdin else "/proc/#{pane_pid}/fd/0"
     if use_stdin:
         cmd = "(cat)|"+cmd
