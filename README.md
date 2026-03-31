@@ -54,81 +54,104 @@ generated splits to the thinker. The **Mind** is most likely the only interface 
 ```python
 Mind(self, splitter=<class 'splitmind.splitter.tmux.Tmux'>, thinker=<class 'splitmind.thinker.pwndbg.Pwndbg'>)
 ```
-A builder to create a splitmind.
-It splits always on the last created split if no 'of' is given or an other split is selected.
-To split the original starting point use select(None) or use an 'of' which is not defined yet.
+A builder to create a splitmind.  
+It splits always on the last created split if no 'of' is given or an other split is selected.  
+To split the original starting point use select(None) or use an 'of' which is not defined yet.  
 Further kwargs are always passed as is the the underlying splitter to be able to have splitter
 specific additional functionality. Parameters not consumed by the splitter are passed as split
 settings to the thinker
 
 #### left
+
 ```python
 Mind.left(self, *args, of=None, display=None, **kwargs)
 ```
-Creates a split left of the current split.
-:param str|split    of       : use this split instead of current
-:param str          display  : the section to be displayed here
-:param various      args     : further args are passed to the splitting cmd
-:param dict         kwargs   : further keyword args are passed to the splitter method
+
+Creates a split left of the current split.  
+:param str|split    of       : use this split instead of current  
+:param str          display  : the section to be displayed here  
+:param various      args     : further args are passed to the splitting cmd  
+:param dict         kwargs   : further keyword args are passed to the splitter method  
+
 #### right
+
 ```python
 Mind.right(self, *args, of=None, display=None, **kwargs)
 ```
-Creates a split right of the current split.
-:param str|split    of       : use this split instead of current
-:param str          display  : the section to be displayed here
-:param various      args     : further args are passed to the splitting cmd
-:param dict         kwargs   : further keyword args are passed to the splitter method
+
+Creates a split right of the current split.  
+:param str|split    of       : use this split instead of current  
+:param str          display  : the section to be displayed here  
+:param various      args     : further args are passed to the splitting cmd  
+:param dict         kwargs   : further keyword args are passed to the splitter method  
+
 #### above
+
 ```python
 Mind.above(self, *args, of=None, display=None, **kwargs)
 ```
-Creates a split above of the current split.
-:param str|split    of       : use this split instead of current
-:param str          display  : the section to be displayed here
-:param various      args     : further args are passed to the splitting cmd
-:param dict         kwargs   : further keyword args are passed to the splitter method
+
+Creates a split above of the current split.  
+:param str|split    of       : use this split instead of current  
+:param str          display  : the section to be displayed here  
+:param various      args     : further args are passed to the splitting cmd  
+:param dict         kwargs   : further keyword args are passed to the splitter method  
+
 #### below
+
 ```python
 Mind.below(self, *args, of=None, display=None, **kwargs)
 ```
-Creates a split below of the current split.
-:param str|split    of       : use this split instead of current
-:param str          display  : the section to be displayed here
-:param various      args     : further args are passed to the splitting cmd
-:param dict         kwargs   : further keyword args are passed to the splitter method
+
+Creates a split below of the current split.  
+:param str|split    of       : use this split instead of current  
+:param str          display  : the section to be displayed here  
+:param various      args     : further args are passed to the splitting cmd  
+:param dict         kwargs   : further keyword args are passed to the splitter method  
+
 #### show
+
 ```python
 Mind.show(self, display, on=None, **kwargs)
 ```
-Does not create a split but tells to display given section on some already created split.
-:param str|split    on       : which split to be used
-:param str          display  : the section to be displayed here
-:param dict         kwargs   : further keyword args are passed to the splitter method
+
+Does not create a split but tells to display given section on some already created split.  
+:param str|split    on       : which split to be used  
+:param str          display  : the section to be displayed here  
+:param dict         kwargs   : further keyword args are passed to the splitter method  
+
 #### select
+
 ```python
 Mind.select(self, display)
 ```
-Selects the given display to continue from there.
-Use None for the main split
+
+Selects the given display to continue from there.  
+Use None for the main split  
+
 #### tell_splitter
+
 ```python
 Mind.tell_splitter(self, **kwargs)
 ```
-Tells the splitter to configure according to the passed keyword arguments.
+
+Tells the splitter to configure according to the passed keyword arguments.  
 Which arguments are available and what happens entirely depends on the implementation of the
 splitter
+
 #### build
+
 ```python
 Mind.build(self, **kwargs)
 ```
-Builds the splitmind, by telling the thinker where to put his thoughts
-:param dict kwagrs : passed to thinker setup to applie thinker specific value
+
+Builds the splitmind, by telling the thinker where to put his thoughts  
+:param dict kwagrs : passed to thinker setup to applie thinker specific value  
 
 
 ## TMUX
 
-Tmux does handle the splits using `split-window`. Further `*args` are directly passed to the tmux
+Tmux does handle the splits using `split-window`. Further `*args` are directly passed to the tmux  
 call. Tmux supports following additional and optional keywords:
 - `cmd : str`: The command to run in the created split
 - `use_stdin : boolean`: sets up the split to be able to receive content as stdin to the given cmd
@@ -155,7 +178,7 @@ end
 
 ## Pwndbg
 
-Currently Pwndbg is the only thinker / content producer available.
+Currently Pwndbg is the only thinker / content producer available.  
 It uses the `contextoutput` function to bind context sections to splits with the matching display
 name.
 
@@ -170,7 +193,7 @@ banner=False on every split.
 
 You like screen? Please go ahead and create a splitter for it (and please submit a pullrequest).
 
-Writing a new splitter is easy, just take a look at `splitmind.splitter.tmux`.
+Writing a new splitter is easy, just take a look at `splitmind.splitter.tmux`.  
 It just takes `left/right/above/below()`, as well as `show()`,`get()`, `splits()` and `close()` to
 be implemented. (ABC class will be comming soon)
 
@@ -189,8 +212,9 @@ creation process/programm.
   .above(cmd='tty; tail -f /dev/null', clearing=False)
 ).build()
  ```
- Creating a pane which (important) does not clear, shows the used tty and then just reads /dev/null.
- Tailing /dev/null is important, so that the tty is not bothered at all by the running process.
+ 
+ Creating a pane which (important) does not clear, shows the used tty and then just reads /dev/null.  
+ Tailing /dev/null is important, so that the tty is not bothered at all by the running process.  
 
  Then in `gdb` issue `tty /dev/pts/<ttynr>` with the shown tty. This will use the newly created
  pane as input/output of the debugged process. Just ignore the warning.
